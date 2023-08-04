@@ -5,8 +5,6 @@ import pandas as pd
 import time
 import psycopg2
 
-url = "https://editorial.rottentomatoes.com/guide/the-200-best-movies-of-the-2010s/"
-
 def start_request(url):
     try:
         print('Start url request')
@@ -131,15 +129,17 @@ def insert_to_db(df):
     except psycopg2.Error as e:
         print(f"An error occured: {e}")
         exit(1)
-
-
-response = start_request(url)
-conn, cursor = connect_to_server()
-moviedf = extract_movie_info(response)
-save_to_csv(moviedf)
-insert_to_db(moviedf)
-
-
-# Close cursor and connection
-cursor.close()
-conn.close()
+        
+def main():
+    url = "https://editorial.rottentomatoes.com/guide/the-200-best-movies-of-the-2010s/"
+    response = start_request(url)
+    conn, cursor = connect_to_server()
+    moviedf = extract_movie_info(response)
+    save_to_csv(moviedf)
+    insert_to_db(moviedf)
+    # Close cursor and connection
+    cursor.close()
+    conn.close()
+    
+if __name__ == "__main__":
+    main()
