@@ -4,12 +4,8 @@ services:
   web_app:
     build:
       context: .
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: postgres
-      DB_USER: postgres
-      DB_PASSWORD: root
+    env_file:
+      - .env
     depends_on:
       - postgres
     volumes:
