@@ -4,6 +4,19 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 import psycopg2
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Read environment variables for default db credentials
+DB_HOST = os.environ.get('DB_HOST')
+DB_PORT = int(os.environ.get('DB_PORT'))
+DB_NAME = os.environ.get('DB_NAME')
+DB_USER = os.environ.get('DB_USER')
+DB_PASS = os.environ.get('DB_PASSWORD')
+
 
 def start_request(url):
     try:
@@ -29,17 +42,29 @@ def save_to_csv(moviedf):
 
 def connect_to_server():
     try:
-        #Connect to db
-        conn_string = "dbname = 'rt_movies' user = 'postgres'  host = 'localhost' port='5432' password ='root'"
+        #Connect to default db
+        conn_string = f"dbname = {DB_NAME} user = {DB_USER}  host = {DB_HOST} port={DB_PORT} password ={DB_PASS}"
         conn = psycopg2.connect(conn_string)
         cursor = conn.cursor()
-        print('Connected to database successfully')
+        print('Connected to default database successfully')
         return conn, cursor
 
     except psycopg2.Error as e:
         print(f"Error connecting to the database: {e}")
         return None, None
         exit(1)
+
+def create_database(cursor, conn): 
+    try:
+        # Create a new database
+        new_db_name = 'rt_movies'
+        create_db_query = f"CREATE DATABASE {new_db_name};"
+        conn.autocommit = True
+        cursor.execute(create_db_query)
+        print(f"Database '{new_db_name}' created successfully")
+        
+    except Exception as e:
+        print(f"An error occured while creating database: {e}")
 
 def extract_movie_info(response):
     try:
@@ -103,7 +128,7 @@ def extract_movie_info(response):
     return moviedf
 
 
-def insert_to_db(df):
+def insert_to_db(df, cursor, conn):
     try:
         table_name = 'bestmovies200'
         # SQL query to create the table if it doesn't exist
@@ -134,9 +159,10 @@ def main():
     url = "https://editorial.rottentomatoes.com/guide/the-200-best-movies-of-the-2010s/"
     response = start_request(url)
     conn, cursor = connect_to_server()
+    create_database(cursor, conn)
     moviedf = extract_movie_info(response)
     save_to_csv(moviedf)
-    insert_to_db(moviedf)
+    insert_to_db(moviedf, cursor, conn)
     # Close cursor and connection
     cursor.close()
     conn.close()
