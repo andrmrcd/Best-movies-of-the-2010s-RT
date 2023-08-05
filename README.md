@@ -2,7 +2,7 @@
 This ETL (Extract, Transform, Load) project scrapes the top 200 movies from the 2010s according to the Rotten Tomatoes editorial [website](https://editorial.rottentomatoes.com/guide/the-200-best-movies-of-the-2010s/). The extracted data is then transformed and loaded into both a CSV file and a PostgreSQL database.
 
 ## Sample Output
-![sample](sample.png)
+![sample](database.png)
  
 ## Setup
 **Pre-requisites**: Docker
