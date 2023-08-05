@@ -51,7 +51,6 @@ def connect_to_server():
 
     except psycopg2.Error as e:
         print(f"Error connecting to the database: {e}")
-        return None, None
         exit(1)
 
 def create_database(cursor, conn): 
@@ -62,9 +61,15 @@ def create_database(cursor, conn):
         conn.autocommit = True
         cursor.execute(create_db_query)
         print(f"Database '{new_db_name}' created successfully")
+
+    # Continue 
+    except psycopg2.errors.DuplicateDatabase:
+        # Database already exists, continue
+        print(f"Database '{new_db_name}' already exists, continuing...")
         
     except Exception as e:
         print(f"An error occured while creating database: {e}")
+        exit(1)
 
 def extract_movie_info(response):
     try:
@@ -126,7 +131,6 @@ def extract_movie_info(response):
         print(f"An error occurred: {e}")
         exit(1)
     return moviedf
-
 
 def insert_to_db(df, cursor, conn):
     try:
