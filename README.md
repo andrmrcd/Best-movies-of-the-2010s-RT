@@ -9,7 +9,7 @@ This ETL (Extract, Transform, Load) project scrapes the top 200 movies from the 
 + Clone the project and `cd Rotten-Tomatoes-Editorial-ETL`
 + Build and run
     + `docker compose build`
-    + `docker compose run`
+    + `docker compose up`
 ### Accessing the database
 1. To access the PostgreSQL server, open a terminal and run:
     - `docker-compose exec postgres psql -U postgres` 
